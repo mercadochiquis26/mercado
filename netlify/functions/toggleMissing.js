@@ -4,8 +4,10 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}');
     const products = await getAllProducts();
-    const product = products.find(p => p.id === body.id);
-    if (!product) return { statusCode: 404, body: JSON.stringify({ error: 'Producto no encontrado' }) };
+    const product = products.find((p) => p.id === body.id);
+    if (!product) {
+      return { statusCode: 404, body: JSON.stringify({ error: 'Producto no encontrado' }) };
+    }
     product.falta_esta_semana = !!body.falta_esta_semana;
     product.updated_at = new Date().toISOString();
     await updateRow(product.rowIndex, toRow(product));

@@ -3,7 +3,7 @@ const { google } = require('googleapis');
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_NAME = process.env.GOOGLE_SHEET_TAB || 'productos';
 const RANGE = `${SHEET_NAME}!A1:Z101`;
-const HEADERS = ['id','producto','categoria','mercado','cantidad_sugerida','falta_esta_semana','activo','creado_por','updated_at'];
+const HEADERS = ['id', 'producto', 'categoria', 'mercado', 'cantidad_sugerida', 'falta_esta_semana', 'activo', 'creado_por', 'updated_at'];
 
 function getAuth() {
   return new google.auth.JWT({
@@ -30,29 +30,32 @@ function normalizeNumber(value) {
   return Number.isFinite(n) ? n : 0;
 }
 
-async function getAllRows() {
+function rowToObject(headers, row, index) {
+  const obj = {};
+  headers.forEach((header, i) => {
+    obj[header] = row[i] ?? '';
+  });
+  obj.rowIndex = index + 2;
+  obj._rowNumber = index + 2;
+  return obj;
+}
+
+async function getRawValues() {
   const sheets = await getSheets();
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range: RANGE
   });
+  return response.data.values || [];
+}
 
-  const values = response.data.values || [];
+async function getAllRows() {
+  const values = await getRawValues();
   if (!values.length) return [];
-
   const headers = values[0].map(h => String(h).trim());
-  const rows = values.slice(1);
-
-  return rows
+  return values.slice(1)
     .filter(row => row.some(cell => String(cell || '').trim() !== ''))
-    .map((row, index) => {
-      const obj = {};
-      headers.forEach((header, i) => {
-        obj[header] = row[i] ?? '';
-      });
-      obj._rowNumber = index + 2;
-      return obj;
-    });
+    .map((row, index) => rowToObject(headers, row, index));
 }
 
 async function getAllProducts() {
@@ -70,7 +73,8 @@ function mapProduct(row) {
     activo: normalizeBoolean(row.activo),
     creado_por: row.creado_por || '',
     updated_at: row.updated_at || '',
-    _rowNumber: row._rowNumber
+    rowIndex: row.rowIndex || row._rowNumber,
+    _rowNumber: row._rowNumber || row.rowIndex
   };
 }
 
@@ -79,6 +83,28 @@ function toRow(product = {}) {
     if (key === 'cantidad_sugerida') return String(normalizeNumber(product[key]));
     if (key === 'falta_esta_semana' || key === 'activo') return normalizeBoolean(product[key]) ? 'TRUE' : 'FALSE';
     return product[key] ?? '';
+  });
+}
+
+async function updateRow(rowIndex, rowValues) {
+  if (!rowIndex) throw new Error('rowIndex requerido');
+  const sheets = await getSheets();
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `${SHEET_NAME}!A${rowIndex}:I${rowIndex}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: { values: [rowValues] }
+  });
+}
+
+async function appendProduct(product) {
+  const sheets = await getSheets();
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: `${SHEET_NAME}!A:I`,
+    valueInputOption: 'USER_ENTERED',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: { values: [toRow(product)] }
   });
 }
 
@@ -92,6 +118,8 @@ module.exports = {
   getAllProducts,
   mapProduct,
   toRow,
+  updateRow,
+  appendProduct,
   nowIso,
   HEADERS,
   SHEET_ID,
