@@ -54,6 +54,10 @@ async function getAllRows() {
     });
 }
 
+async function getAllProducts() {
+  return getAllRows();
+}
+
 function mapProduct(row) {
   return {
     id: row.id,
@@ -72,6 +76,7 @@ function mapProduct(row) {
 module.exports = {
   getSheets,
   getAllRows,
+  getAllProducts,
   mapProduct,
   SHEET_ID,
   SHEET_NAME,
