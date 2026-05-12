@@ -3,6 +3,7 @@ const { google } = require('googleapis');
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_NAME = process.env.GOOGLE_SHEET_TAB || 'productos';
 const RANGE = `${SHEET_NAME}!A1:Z101`;
+const HEADERS = ['id','producto','categoria','mercado','cantidad_sugerida','falta_esta_semana','activo','creado_por','updated_at'];
 
 function getAuth() {
   return new google.auth.JWT({
@@ -73,11 +74,26 @@ function mapProduct(row) {
   };
 }
 
+function toRow(product = {}) {
+  return HEADERS.map((key) => {
+    if (key === 'cantidad_sugerida') return String(normalizeNumber(product[key]));
+    if (key === 'falta_esta_semana' || key === 'activo') return normalizeBoolean(product[key]) ? 'TRUE' : 'FALSE';
+    return product[key] ?? '';
+  });
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
 module.exports = {
   getSheets,
   getAllRows,
   getAllProducts,
   mapProduct,
+  toRow,
+  nowIso,
+  HEADERS,
   SHEET_ID,
   SHEET_NAME,
   RANGE
