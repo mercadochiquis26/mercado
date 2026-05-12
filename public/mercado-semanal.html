@@ -3,368 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mercado semanal</title>
+  <title>Mercado semanal review v4</title>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
   <style>
-    :root, [data-theme="light"] {
-      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
-      --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9; --color-surface-offset: #edeae5;
-      --color-border: #d4d1ca; --color-divider: #dcd9d5; --color-text: #28251d; --color-text-muted: #6f6c66; --color-text-faint: #9b9892;
-      --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-primary-highlight: #dce9e8; --color-success: #437a22; --color-warning: #964219; --color-danger: #a13544;
-      --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-full: 9999px;
-      --shadow-sm: 0 1px 2px rgba(32, 30, 24, 0.06); --shadow-md: 0 10px 24px rgba(32, 30, 24, 0.08);
-      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-      --font-body: 'Satoshi', Inter, sans-serif;
-    }
-    [data-theme="dark"] {
-      --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d; --color-surface-offset: #242320;
-      --color-border: #393836; --color-divider: #2b2a28; --color-text: #cdccca; --color-text-muted: #a19f9b; --color-text-faint: #777571;
-      --color-primary: #4f98a3; --color-primary-hover: #227f8b; --color-primary-highlight: #273536; --color-success: #6daa45; --color-warning: #bb653b; --color-danger: #dd6974;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.25); --shadow-md: 0 10px 24px rgba(0,0,0,0.34);
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body { font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); line-height: 1.5; }
-    button, input, select { font: inherit; }
-    .shell { min-height: 100dvh; display: grid; grid-template-columns: 280px 1fr; }
-    .sidebar { border-right: 1px solid var(--color-divider); background: var(--color-surface); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
-    .brand { display: flex; align-items: center; gap: var(--space-3); }
-    .logo { width: 40px; height: 40px; border-radius: 12px; background: var(--color-primary); display: grid; place-items: center; color: white; box-shadow: var(--shadow-sm); }
-    .logo svg { width: 22px; height: 22px; }
-    .brand-text strong { display: block; font-size: var(--text-sm); }
-    .brand-text span { display: block; color: var(--color-text-muted); font-size: var(--text-xs); }
-    .nav { display: grid; gap: var(--space-2); }
-    .nav button { border: 1px solid transparent; border-radius: var(--radius-lg); padding: 0.9rem 1rem; text-align: left; color: var(--color-text); background: transparent; cursor: pointer; }
-    .nav button.active { background: var(--color-primary-highlight); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 18%, var(--color-border)); }
-    .helper-card, .panel, .item-card, .summary-card { background: var(--color-surface); border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); }
-    .helper-card { padding: var(--space-5); }
-    .helper-card p { margin: 0; color: var(--color-text-muted); font-size: var(--text-sm); }
-    .content { padding: var(--space-6); display: grid; gap: var(--space-6); }
-    .topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
-    .title-wrap h1 { font-size: var(--text-xl); line-height: 1.1; margin: 0 0 var(--space-2); }
-    .title-wrap p { margin: 0; color: var(--color-text-muted); max-width: 68ch; }
-    .top-actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
-    .btn { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 0.85rem 1rem; background: var(--color-surface-2); color: var(--color-text); cursor: pointer; min-height: 44px; }
-    .btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
-    .btn-danger { background: transparent; color: var(--color-danger); border-color: color-mix(in srgb, var(--color-danger) 25%, var(--color-border)); }
-    .grid-hero { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: var(--space-6); }
-    .panel { padding: var(--space-5); }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
-    .summary-card { padding: var(--space-4); }
-    .summary-card .label { color: var(--color-text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
-    .summary-card .value { margin-top: var(--space-2); font-size: var(--text-lg); font-weight: 700; }
-    .section-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4); flex-wrap: wrap; }
-    .section-head h2 { margin: 0; font-size: var(--text-lg); }
-    .section-head p { margin: 0; color: var(--color-text-muted); font-size: var(--text-sm); }
-    form { display: grid; gap: var(--space-4); }
-    .field { display: grid; gap: var(--space-2); }
-    .field-inline { display: grid; grid-template-columns: 1fr 1fr 1fr auto auto; gap: var(--space-3); align-items: end; }
-    label { font-size: var(--text-sm); font-weight: 700; }
-    input[type="text"], select { min-height: 46px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); padding: 0.8rem 0.9rem; background: var(--color-surface-2); color: var(--color-text); }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
-    .products, .shopping-list { display: grid; gap: var(--space-4); }
-    .item-card { padding: var(--space-4); display: grid; gap: var(--space-3); }
-    .item-top { display: flex; justify-content: space-between; gap: var(--space-3); align-items: start; }
-    .item-name { font-weight: 700; }
-    .meta { color: var(--color-text-muted); font-size: var(--text-sm); }
-    .item-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-    .toggle { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--color-text); font-size: var(--text-sm); }
-    .toggle input { width: 18px; height: 18px; accent-color: var(--color-primary); }
-    .badge { padding: 0.32rem 0.6rem; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; }
-    .badge.ok { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
-    .badge.need { background: color-mix(in srgb, var(--color-warning) 14%, transparent); color: var(--color-warning); }
-    .badge.market { background: var(--color-primary-highlight); color: var(--color-primary); }
-    .shopping-group { display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-xl); background: var(--color-surface-2); border: 1px solid var(--color-divider); }
-    .shopping-row { display: flex; justify-content: space-between; gap: var(--space-3); align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--color-divider); }
-    .shopping-row:last-child { border-bottom: 0; }
-    .small { font-size: var(--text-sm); }
-    .muted { color: var(--color-text-muted); }
-    .empty { color: var(--color-text-muted); padding: var(--space-6); border: 1px dashed var(--color-border); border-radius: var(--radius-lg); text-align: center; }
-    .status { padding: 0.8rem 1rem; border-radius: var(--radius-lg); background: var(--color-primary-highlight); color: var(--color-primary); font-size: var(--text-sm); }
-    .hidden { display: none !important; }
-    @media (max-width: 1100px) {
-      .shell { grid-template-columns: 1fr; }
-      .sidebar { border-right: 0; border-bottom: 1px solid var(--color-divider); }
-      .grid-hero, .two-col, .stats, .field-inline { grid-template-columns: 1fr; }
-    }
+    :root, [data-theme="light"] { --text-xs: clamp(0.75rem,0.7rem + 0.25vw,0.875rem); --text-sm: clamp(0.875rem,0.8rem + 0.35vw,1rem); --text-base: clamp(1rem,0.95rem + 0.25vw,1.125rem); --text-lg: clamp(1.125rem,1rem + 0.75vw,1.5rem); --text-xl: clamp(1.5rem,1.2rem + 1.25vw,2.25rem); --space-2:.5rem; --space-3:.75rem; --space-4:1rem; --space-5:1.25rem; --space-6:1.5rem; --space-8:2rem; --color-bg:#fcf6fa; --color-surface:#fffafd; --color-surface-2:#fff7fb; --color-border:#ead6e2; --color-divider:#f0e2ea; --color-text:#352a32; --color-text-muted:#7d6b76; --color-primary:#b6578d; --color-primary-hover:#9c4779; --color-primary-highlight:#f7ddeb; --color-danger:#b44f67; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px; --shadow-sm:0 1px 2px rgba(32,30,24,.06); --font-body:'Satoshi', Inter, sans-serif; }
+    [data-theme="dark"] { --color-bg:#1f1820; --color-surface:#281f29; --color-surface-2:#302533; --color-border:#4d3b48; --color-divider:#3c2e39; --color-text:#f0e6ec; --color-text-muted:#c5aebb; --color-primary:#e08ab4; --color-primary-hover:#d26b9d; --color-primary-highlight:#493140; --color-danger:#f08aa1; }
+    *{box-sizing:border-box} body{margin:0;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg)} .shell{min-height:100dvh;display:grid;grid-template-columns:280px 1fr} .sidebar{border-right:1px solid var(--color-divider);background:var(--color-surface);padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6)} .brand{display:flex;align-items:center;gap:var(--space-3)} .logo{width:40px;height:40px;border-radius:12px;background:var(--color-primary);display:grid;place-items:center;color:#fff} .brand-text strong{display:block;font-size:var(--text-sm)} .brand-text span{display:block;color:var(--color-text-muted);font-size:var(--text-xs)} .nav{display:grid;gap:var(--space-2)} .nav button{border:1px solid transparent;border-radius:var(--radius-lg);padding:.9rem 1rem;background:transparent;text-align:left;cursor:pointer;color:var(--color-text)} .nav button.active{background:var(--color-primary-highlight);color:var(--color-primary)} .content{padding:var(--space-6);display:grid;gap:var(--space-6)} .topbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap} .title-wrap h1{margin:0 0 .35rem;font-size:var(--text-xl)} .title-wrap p{margin:0;color:var(--color-text-muted);max-width:70ch} .panel,.item-card,.summary-card,.shopping-group{background:var(--color-surface);border:1px solid color-mix(in srgb, var(--color-text) 10%, transparent);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm)} .panel,.shopping-group{padding:var(--space-5)} .section-head{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);margin-bottom:var(--space-4);flex-wrap:wrap} .section-head h2{margin:0;font-size:var(--text-lg)} .section-head p{margin:0;color:var(--color-text-muted);font-size:var(--text-sm)} .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)} .summary-card{padding:var(--space-4)} .summary-card .label{font-size:var(--text-xs);text-transform:uppercase;color:var(--color-text-muted)} .summary-card .value{margin-top:.35rem;font-size:var(--text-lg);font-weight:700} .products,.shopping-list{display:grid;gap:var(--space-4)} .item-card{padding:var(--space-4);display:grid;gap:var(--space-4)} .item-top{display:flex;justify-content:space-between;align-items:start;gap:var(--space-3)} .item-name{font-weight:700} .badge{padding:.32rem .6rem;border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:700} .badge.market{background:var(--color-primary-highlight);color:var(--color-primary)} .badge.need{background:color-mix(in srgb, var(--color-primary) 16%, transparent);color:var(--color-primary)} .btn{border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:.85rem 1rem;background:var(--color-surface-2);color:var(--color-text);cursor:pointer;min-height:44px} .btn-primary{background:var(--color-primary);border-color:var(--color-primary);color:#fff} .btn-primary:hover{background:var(--color-primary-hover)} .btn-danger{color:var(--color-danger)} .status{padding:.8rem 1rem;border-radius:var(--radius-lg);background:var(--color-primary-highlight);color:var(--color-primary);font-size:var(--text-sm)} .field{display:grid;gap:var(--space-2)} label{font-size:var(--text-sm);font-weight:700} input[type=text],input[type=number],select{min-height:46px;border-radius:var(--radius-lg);border:1px solid var(--color-border);padding:.8rem .9rem;background:var(--color-surface-2);color:var(--color-text)} .toggle-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.7rem 1rem;border-radius:var(--radius-full);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text);font-size:var(--text-sm);font-weight:700;cursor:pointer} .toggle-btn.is-on{background:var(--color-primary);border-color:var(--color-primary);color:#fff} .toggle-label{font-size:var(--text-sm);font-weight:700;color:var(--color-text-muted)} .field-inline{display:grid;grid-template-columns:1.35fr .5fr .75fr auto auto;gap:var(--space-3);align-items:end} .footer-actions{display:flex;justify-content:flex-end;gap:var(--space-3)} .shopping-group h3{margin:0 0 var(--space-3)} .shopping-row{display:flex;justify-content:space-between;gap:var(--space-3);padding:.75rem 0;border-bottom:1px solid var(--color-divider);align-items:center} .shopping-row:last-child{border-bottom:0} .hidden{display:none!important} .empty{color:var(--color-text-muted);padding:var(--space-6);border:1px dashed var(--color-border);border-radius:var(--radius-lg);text-align:center} .mary-new-grid{display:grid;gap:var(--space-4)} .new-box{padding:var(--space-4);border:1px dashed var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface-2)}
+    @media (max-width:1100px){.shell{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--color-divider)}.stats,.field-inline{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14"/><path d="M7 8l1.2 9.5a2 2 0 0 0 2 1.5h3.6a2 2 0 0 0 2-1.5L17 8"/><path d="M9 8V6.8A2.8 2.8 0 0 1 11.8 4h.4A2.8 2.8 0 0 1 15 6.8V8"/></svg>
-        </div>
-        <div class="brand-text">
-          <strong>Mercado semanal</strong>
-          <span>Netlify + Google Sheets</span>
-        </div>
-      </div>
-      <nav class="nav" aria-label="Navegación principal">
-        <button data-view-btn="empleada">Vista empleada</button>
-        <button class="active" data-view-btn="admin">Administración</button>
-      </nav>
-      <div class="helper-card"><p>La lista final de compra solo se muestra en administración y se agrupa por mercado.</p></div>
-      <button class="btn" data-theme-toggle aria-label="Cambiar tema">Modo oscuro</button>
+      <div class="brand"><div class="logo">M</div><div class="brand-text"><strong>Mercado semanal</strong><span>Review interna en Perplexity</span></div></div>
+      <nav class="nav"><button data-view-btn="mary">Sra Mary</button><button class="active" data-view-btn="admin">Administración</button></nav>
+      <button class="btn" data-theme-toggle>Modo oscuro</button>
     </aside>
     <main class="content">
-      <header class="topbar">
-        <div class="title-wrap">
-          <h1>Compra semanal de mercado</h1>
-          <p>La empleada marca faltantes y agrega productos nuevos. Administración revisa, corrige y genera la lista final por mercado.</p>
-        </div>
-        <div class="top-actions">
-          <button class="btn" id="refreshBtn">Actualizar</button>
-          <button class="btn" id="resetWeekBtn">Reset semana</button>
-        </div>
-      </header>
-      <div id="status" class="status">Cargando productos…</div>
+      <header class="topbar"><div class="title-wrap"><h1>Compra semanal de mercado</h1><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado. [code_file:2]</p></div><button class="btn" id="resetWeekBtn">Reset semana</button></header>
+      <div id="status" class="status">Vista de revisión con botones táctiles para marcar faltantes. [code_file:2]</div>
 
-      <section id="view-empleada" class="view hidden">
-        <div class="grid-hero">
-          <div class="panel">
-            <div class="section-head"><div><h2>Qué falta en casa</h2><p>Marca lo que ya no tenemos y debe comprarse esta semana.</p></div></div>
-            <div class="products" id="employeeList"></div>
-          </div>
-          <div class="panel">
-            <div class="section-head"><div><h2>Agregar producto nuevo</h2><p>Si no está en la lista, agrégalo con su mercado correspondiente.</p></div></div>
-            <form id="employeeAddForm">
-              <div class="field"><label for="employeeName">Producto</label><input id="employeeName" name="producto" type="text" required /></div>
-              <div class="two-col">
-                <div class="field"><label for="employeeCategory">Categoría</label><input id="employeeCategory" name="categoria" type="text" placeholder="Ej. Despensa" /></div>
-                <div class="field"><label for="employeeQty">Cantidad sugerida</label><input id="employeeQty" name="cantidad_sugerida" type="text" placeholder="Ej. 2 unidades" /></div>
-              </div>
-              <div class="field"><label for="employeeMarket">Mercado</label><select id="employeeMarket" name="mercado"></select></div>
-              <button class="btn btn-primary" type="submit">Agregar producto</button>
+      <section id="view-mary" class="view hidden">
+        <div class="panel">
+          <div class="section-head"><div><h2>Qué falta en casa</h2><p>Primero va toda la lista cargada; al final quedan las cajas para agregar algo excepcional que no esté en la lista. [code_file:2]</p></div></div>
+          <div class="products" id="maryList"></div>
+        </div>
+        <div class="panel">
+          <div class="section-head"><div><h2>Agregar producto nuevo</h2><p>Se dejan dos cajas al final para casos poco frecuentes. Si alguna vez hace falta más, se resuelve desde administración. [code_file:2]</p></div></div>
+          <div class="mary-new-grid">
+            <form class="new-box maryAddForm">
+              <div class="field"><label>Producto</label><input name="producto" type="text" placeholder="Ej. Yogurt paquete" /></div>
+              <div class="field"><label>Cantidad</label><input name="cantidad" type="number" min="1" step="1" placeholder="Ej. 2" /></div>
+              <div class="field"><label>Mercado</label><select name="mercado"></select></div>
+              <button class="btn" type="submit">Agregar</button>
+            </form>
+            <form class="new-box maryAddForm">
+              <div class="field"><label>Producto</label><input name="producto" type="text" placeholder="Ej. Manzanas bolsa" /></div>
+              <div class="field"><label>Cantidad</label><input name="cantidad" type="number" min="1" step="1" placeholder="Ej. 1" /></div>
+              <div class="field"><label>Mercado</label><select name="mercado"></select></div>
+              <button class="btn" type="submit">Agregar</button>
             </form>
           </div>
+          <div class="footer-actions" style="margin-top:var(--space-4)"><button class="btn btn-primary" id="marySaveBtn">Guardar cambios</button></div>
         </div>
       </section>
 
       <section id="view-admin" class="view">
-        <div class="grid-hero">
-          <div class="panel">
-            <div class="section-head"><div><h2>Resumen</h2><p>Estado actual de la compra semanal.</p></div></div>
-            <div class="stats">
-              <div class="summary-card"><div class="label">Productos activos</div><div class="value" id="statProducts">0</div></div>
-              <div class="summary-card"><div class="label">Faltan esta semana</div><div class="value" id="statMissing">0</div></div>
-              <div class="summary-card"><div class="label">Mercados usados</div><div class="value" id="statMarkets">0</div></div>
-            </div>
-          </div>
-          <div class="panel">
-            <div class="section-head"><div><h2>Lista final</h2><p>Visible solo en administración. Se agrupa por mercado y se puede copiar.</p></div></div>
-            <button class="btn btn-primary" id="copyListBtn">Copiar al portapapeles</button>
-          </div>
-        </div>
-
         <div class="panel">
-          <div class="section-head"><div><h2>Productos</h2><p>Desde aquí puedes cambiar mercado, cantidad, marcar faltantes o eliminar productos.</p></div></div>
+          <div class="section-head"><div><h2>Resumen</h2><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado. [code_file:2]</p></div></div>
+          <div class="stats"><div class="summary-card"><div class="label">Productos activos</div><div class="value" id="statProducts">0</div></div><div class="summary-card"><div class="label">Faltan esta semana</div><div class="value" id="statMissing">0</div></div><div class="summary-card"><div class="label">Mercados usados</div><div class="value" id="statMarkets">0</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="section-head"><div><h2>Productos</h2><p>Se eliminó la duplicación no editable de cantidad y mercado arriba de los campos editables. [code_file:2]</p></div></div>
           <div class="products" id="adminList"></div>
+          <div class="footer-actions"><button class="btn btn-primary" id="adminSaveBtn">Guardar cambios</button></div>
         </div>
-
         <div class="panel">
-          <div class="section-head"><div><h2>Lista final por mercado</h2><p>Salida consolidada para hacer las compras.</p></div></div>
+          <div class="section-head"><div><h2>Lista final por mercado</h2><p>Queda al final del todo para copiar después de revisar. [code_file:2]</p></div><button class="btn btn-primary" id="copyBtn">Copiar al portapapeles</button></div>
           <div class="shopping-list" id="shoppingList"></div>
         </div>
       </section>
     </main>
   </div>
-
   <script>
-    const MARKETS = ['Ribasmith', 'Organica', 'Rey', 'Krume', 'Otros'];
-    const views = ['empleada', 'admin'];
-    const statusEl = document.getElementById('status');
-    let products = [];
-
-    const byId = (id) => document.getElementById(id);
-    function setStatus(msg, isError = false) {
-      statusEl.textContent = msg;
-      statusEl.style.background = isError ? 'color-mix(in srgb, var(--color-danger) 14%, transparent)' : 'var(--color-primary-highlight)';
-      statusEl.style.color = isError ? 'var(--color-danger)' : 'var(--color-primary)';
-    }
-
-    function marketOptions(selected) {
-      return MARKETS.map(m => `<option value="${m}" ${selected === m ? 'selected' : ''}>${m}</option>`).join('');
-    }
-    byId('employeeMarket').innerHTML = marketOptions('Rey');
-
-    async function api(path, method = 'GET', body) {
-      const res = await fetch(`/.netlify/functions/${path}`, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: body ? JSON.stringify(body) : undefined
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Error inesperado');
-      return data;
-    }
-
-    async function loadProducts() {
-      try {
-        setStatus('Cargando productos…');
-        const data = await api('getProducts');
-        products = data.products || [];
-        render();
-        setStatus('Productos cargados correctamente.');
-      } catch (error) {
-        setStatus(error.message, true);
-      }
-    }
-
-    function employeeCard(product) {
-      return `<article class="item-card">
-        <div class="item-top"><div><div class="item-name">${product.producto}</div><div class="meta">${product.categoria || 'Sin categoría'} · ${product.cantidad_sugerida || 'Sin cantidad'} </div></div><span class="badge market">${product.mercado}</span></div>
-        <div class="item-actions"><label class="toggle"><input type="checkbox" data-toggle-id="${product.id}" ${product.falta_esta_semana ? 'checked' : ''}> Falta esta semana</label></div>
-      </article>`;
-    }
-
-    function adminCard(product) {
-      return `<article class="item-card">
-        <div class="item-top"><div><div class="item-name">${product.producto}</div><div class="meta">${product.categoria || 'Sin categoría'} · creado por ${product.creado_por || 'admin'}</div></div><span class="badge ${product.falta_esta_semana ? 'need' : 'ok'}">${product.falta_esta_semana ? 'Comprar' : 'En casa'}</span></div>
-        <div class="field-inline">
-          <div class="field"><label>Mercado</label><select data-market-id="${product.id}">${marketOptions(product.mercado)}</select></div>
-          <div class="field"><label>Cantidad</label><input type="text" value="${product.cantidad_sugerida || ''}" data-qty-id="${product.id}" /></div>
-          <div class="field"><label>Producto</label><input type="text" value="${product.producto}" data-name-id="${product.id}" /></div>
-          <label class="toggle"><input type="checkbox" data-toggle-id="${product.id}" ${product.falta_esta_semana ? 'checked' : ''}> Falta</label>
-          <button class="btn btn-danger" data-delete-id="${product.id}">Eliminar</button>
-        </div>
-      </article>`;
-    }
-
-    function groupedShopping(products) {
-      const grouped = Object.fromEntries(MARKETS.map(m => [m, []]));
-      products.filter(p => p.falta_esta_semana).forEach(p => {
-        (grouped[p.mercado] || grouped['Otros']).push(p);
-      });
-      return grouped;
-    }
-
-    function renderStats() {
-      byId('statProducts').textContent = products.length;
-      byId('statMissing').textContent = products.filter(p => p.falta_esta_semana).length;
-      byId('statMarkets').textContent = new Set(products.map(p => p.mercado)).size;
-    }
-
-    function renderShoppingList() {
-      const grouped = groupedShopping(products);
-      const html = MARKETS.map(market => {
-        const items = grouped[market];
-        if (!items.length) return '';
-        return `<section class="shopping-group"><h3>${market}</h3>${items.map(p => `<div class="shopping-row"><span><strong>${p.producto}</strong><br><span class="small muted">${p.categoria || 'Sin categoría'}</span></span><span class="small">${p.cantidad_sugerida || ''}</span></div>`).join('')}</section>`;
-      }).join('');
-      byId('shoppingList').innerHTML = html || '<div class="empty">No hay productos faltantes para esta semana.</div>';
-    }
-
-    function render() {
-      renderStats();
-      byId('employeeList').innerHTML = products.map(employeeCard).join('') || '<div class="empty">No hay productos activos.</div>';
-      byId('adminList').innerHTML = products.map(adminCard).join('') || '<div class="empty">No hay productos activos.</div>';
-      renderShoppingList();
-      bindEvents();
-    }
-
-    function bindEvents() {
-      document.querySelectorAll('[data-toggle-id]').forEach(el => el.onchange = async () => {
-        try {
-          await api('toggleMissing', 'POST', { id: el.dataset.toggleId, falta_esta_semana: el.checked });
-          await loadProducts();
-        } catch (error) { setStatus(error.message, true); }
-      });
-
-      document.querySelectorAll('[data-market-id]').forEach(el => el.onchange = async () => {
-        try {
-          await api('updateProduct', 'POST', { id: el.dataset.marketId, mercado: el.value });
-          setStatus('Mercado actualizado.');
-          await loadProducts();
-        } catch (error) { setStatus(error.message, true); }
-      });
-
-      document.querySelectorAll('[data-qty-id]').forEach(el => el.onblur = async () => {
-        try {
-          await api('updateProduct', 'POST', { id: el.dataset.qtyId, cantidad_sugerida: el.value.trim() });
-          setStatus('Cantidad actualizada.');
-        } catch (error) { setStatus(error.message, true); }
-      });
-
-      document.querySelectorAll('[data-name-id]').forEach(el => el.onblur = async () => {
-        try {
-          await api('updateProduct', 'POST', { id: el.dataset.nameId, producto: el.value.trim() });
-          setStatus('Producto actualizado.');
-        } catch (error) { setStatus(error.message, true); }
-      });
-
-      document.querySelectorAll('[data-delete-id]').forEach(el => el.onclick = async () => {
-        if (!confirm('¿Eliminar este producto?')) return;
-        try {
-          await api('deleteProduct', 'POST', { id: el.dataset.deleteId });
-          await loadProducts();
-          setStatus('Producto eliminado.');
-        } catch (error) { setStatus(error.message, true); }
-      });
-    }
-
-    byId('employeeAddForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(e.target).entries());
-      try {
-        await api('addProduct', 'POST', data);
-        e.target.reset();
-        byId('employeeMarket').innerHTML = marketOptions('Rey');
-        await loadProducts();
-        setStatus('Producto agregado correctamente.');
-      } catch (error) { setStatus(error.message, true); }
-    });
-
-    byId('resetWeekBtn').addEventListener('click', async () => {
-      if (!confirm('¿Resetear la semana completa?')) return;
-      try {
-        await api('resetWeek', 'POST');
-        await loadProducts();
-        setStatus('Semana reseteada.');
-      } catch (error) { setStatus(error.message, true); }
-    });
-
-    byId('refreshBtn').addEventListener('click', loadProducts);
-
-    byId('copyListBtn').addEventListener('click', async () => {
-      const grouped = groupedShopping(products);
-      const text = MARKETS.map(market => {
-        const items = grouped[market];
-        if (!items.length) return '';
-        return `${market.toUpperCase()}\n${items.map(p => `- ${p.producto}${p.cantidad_sugerida ? ` (${p.cantidad_sugerida})` : ''}`).join('\n')}`;
-      }).filter(Boolean).join('\n\n');
-      try {
-        await navigator.clipboard.writeText(text || 'No hay productos pendientes.');
-        setStatus('Lista copiada al portapapeles.');
-      } catch {
-        alert(text || 'No hay productos pendientes.');
-      }
-    });
-
-    document.querySelectorAll('[data-view-btn]').forEach(btn => btn.addEventListener('click', () => {
-      const target = btn.dataset.viewBtn;
-      document.querySelectorAll('[data-view-btn]').forEach(b => b.classList.toggle('active', b === btn));
-      views.forEach(view => byId(`view-${view}`).classList.toggle('hidden', view !== target));
-    }));
-
-    (function initTheme(){
-      const root = document.documentElement;
-      let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.setAttribute('data-theme', theme);
-      const toggle = document.querySelector('[data-theme-toggle]');
-      const sync = () => toggle.textContent = theme === 'dark' ? 'Modo claro' : 'Modo oscuro';
-      sync();
-      toggle.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', theme); sync(); });
-    })();
-
-    loadProducts();
+    const MARKETS=['Ribasmith','Organica','Rey','Krume','Otros'];
+    let products=[
+      {id:1,producto:'Huevos docena',cantidad:2,mercado:'Ribasmith',falta:true},
+      {id:2,producto:'Leche caja',cantidad:3,mercado:'Ribasmith',falta:false},
+      {id:3,producto:'Bananas bolsa',cantidad:1,mercado:'Organica',falta:true},
+      {id:4,producto:'Pan integral paquete',cantidad:2,mercado:'Rey',falta:true},
+      {id:5,producto:'Pan masa madre unidad',cantidad:1,mercado:'Krume',falta:false},
+      {id:6,producto:'Papel higiénico paquete',cantidad:2,mercado:'Rey',falta:true}
+    ];
+    let pendingMary=new Map(); let pendingAdmin=new Map();
+    const byId=(id)=>document.getElementById(id); const statusEl=byId('status');
+    const marketOptions=(selected='Rey')=>MARKETS.map(m=>`<option value="${m}" ${m===selected?'selected':''}>${m}</option>`).join('');
+    document.querySelectorAll('.maryAddForm select').forEach(s=>s.innerHTML=marketOptions());
+    function setStatus(msg){statusEl.textContent=msg}
+    function renderStats(){byId('statProducts').textContent=products.length;byId('statMissing').textContent=products.filter(p=>p.falta).length;byId('statMarkets').textContent=new Set(products.map(p=>p.mercado)).size}
+    function maryCard(p){return `<article class="item-card"><div class="item-top"><div class="item-name">${p.producto}</div><span class="badge ${p.falta?'need':'market'}">${p.falta?'Comprar':'En casa'}</span></div><div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap"><span class="toggle-label">Falta esta semana</span><button type="button" class="toggle-btn ${p.falta?'is-on':''}" data-mary-toggle="${p.id}" aria-pressed="${p.falta?'true':'false'}">${p.falta?'Marcado':'Marcar'}</button></div></article>`}
+    function adminCard(p){return `<article class="item-card"><div class="item-top"><div class="item-name">${p.producto}</div><span class="badge market">${p.mercado}</span></div><div class="field-inline"><div class="field"><label>Producto</label><input type="text" value="${p.producto}" data-admin-name="${p.id}"></div><div class="field"><label>Cantidad</label><input type="number" min="1" step="1" value="${p.cantidad}" data-admin-qty="${p.id}"></div><div class="field"><label>Mercado</label><select data-admin-market="${p.id}">${marketOptions(p.mercado)}</select></div><div class="field"><label>Falta</label><button type="button" class="toggle-btn ${p.falta?'is-on':''}" data-admin-toggle="${p.id}" aria-pressed="${p.falta?'true':'false'}">${p.falta?'Marcado':'Marcar'}</button></div><button class="btn btn-danger" data-delete="${p.id}">Eliminar</button></div></article>`}
+    function grouped(){const groups=Object.fromEntries(MARKETS.map(m=>[m,[]]));products.filter(p=>p.falta).forEach(p=>groups[p.mercado].push(p));return groups}
+    function renderShopping(){const groups=grouped();byId('shoppingList').innerHTML=MARKETS.map(m=>groups[m].length?`<section class="shopping-group"><h3>${m}</h3>${groups[m].map(p=>`<div class="shopping-row"><span><strong>${p.producto}</strong><br><span style="color:var(--color-text-muted);font-size:var(--text-sm)">Cantidad: ${p.cantidad}</span></span><span>${p.mercado}</span></div>`).join('')}</section>`:'').join('')||'<div class="empty">No hay productos pendientes.</div>'}
+    function render(){renderStats();byId('maryList').innerHTML=products.map(maryCard).join('');byId('adminList').innerHTML=products.map(adminCard).join('');renderShopping();bind()}
+    function bind(){document.querySelectorAll('[data-mary-toggle]').forEach(el=>el.onclick=()=>{const id=Number(el.dataset.maryToggle);const current=pendingMary.has(id)?pendingMary.get(id).falta:products.find(p=>p.id===id)?.falta;const next=!current;pendingMary.set(id,{falta:next});el.classList.toggle('is-on',next);el.textContent=next?'Marcado':'Marcar';el.setAttribute('aria-pressed',String(next));});document.querySelectorAll('[data-admin-name]').forEach(el=>el.oninput=()=>pendingAdmin.set(Number(el.dataset.adminName),{...(pendingAdmin.get(Number(el.dataset.adminName))||{}),producto:el.value}));document.querySelectorAll('[data-admin-qty]').forEach(el=>el.oninput=()=>pendingAdmin.set(Number(el.dataset.adminQty),{...(pendingAdmin.get(Number(el.dataset.adminQty))||{}),cantidad:Number(el.value||0)}));document.querySelectorAll('[data-admin-market]').forEach(el=>el.onchange=()=>pendingAdmin.set(Number(el.dataset.adminMarket),{...(pendingAdmin.get(Number(el.dataset.adminMarket))||{}),mercado:el.value}));document.querySelectorAll('[data-admin-toggle]').forEach(el=>el.onclick=()=>{const id=Number(el.dataset.adminToggle);const current=pendingAdmin.has(id)?pendingAdmin.get(id).falta:products.find(p=>p.id===id)?.falta;const next=!current;pendingAdmin.set(id,{...(pendingAdmin.get(id)||{}),falta:next});el.classList.toggle('is-on',next);el.textContent=next?'Marcado':'Marcar';el.setAttribute('aria-pressed',String(next));});document.querySelectorAll('[data-delete]').forEach(el=>el.onclick=()=>{products=products.filter(p=>p.id!==Number(el.dataset.delete));setStatus('Producto eliminado en la revisión.');render()})}
+    byId('marySaveBtn').onclick=()=>{for(const [id,ch] of pendingMary) products=products.map(p=>p.id===id?{...p,...ch}:p);pendingMary.clear();setStatus('Cambios de Sra Mary guardados en esta revisión.');render()};
+    byId('adminSaveBtn').onclick=()=>{for(const [id,ch] of pendingAdmin) products=products.map(p=>p.id===id?{...p,...ch}:p);pendingAdmin.clear();setStatus('Cambios de administración guardados en esta revisión.');render()};
+    document.querySelectorAll('.maryAddForm').forEach(form=>form.addEventListener('submit',(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(form).entries());if(!data.producto||!data.cantidad){setStatus('Completa producto y cantidad para agregar uno nuevo.');return;}products.push({id:Date.now()+Math.floor(Math.random()*1000),producto:data.producto,cantidad:Number(data.cantidad),mercado:data.mercado||'Rey',falta:true});form.reset();form.querySelector('select').innerHTML=marketOptions();setStatus('Producto nuevo agregado en la revisión.');render();}));
+    byId('copyBtn').onclick=async()=>{const groups=grouped();const text=MARKETS.map(m=>groups[m].length?`${m.toUpperCase()}\n${groups[m].map(p=>`- ${p.producto} (${p.cantidad})`).join('\n')}`:'').filter(Boolean).join('\n\n');try{await navigator.clipboard.writeText(text||'No hay productos pendientes.');setStatus('Lista copiada al portapapeles.')}catch{alert(text||'No hay productos pendientes.')}};
+    byId('resetWeekBtn').onclick=()=>{products=products.map(p=>({...p,falta:false}));pendingMary.clear();pendingAdmin.clear();setStatus('Semana reseteada en la revisión.');render()};
+    document.querySelectorAll('[data-view-btn]').forEach(btn=>btn.addEventListener('click',()=>{const target=btn.dataset.viewBtn;document.querySelectorAll('[data-view-btn]').forEach(b=>b.classList.toggle('active',b===btn));['mary','admin'].forEach(v=>byId(`view-${v}`).classList.toggle('hidden',v!==target))}));
+    (function(){const root=document.documentElement;let theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';root.setAttribute('data-theme',theme);const toggle=document.querySelector('[data-theme-toggle]');const sync=()=>toggle.textContent=theme==='dark'?'Modo claro':'Modo oscuro';sync();toggle.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';root.setAttribute('data-theme',theme);sync();});})();
+    render();
   </script>
 </body>
 </html>
