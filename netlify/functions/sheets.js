@@ -1,130 +1,79 @@
 const { google } = require('googleapis');
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_NAME = process.env.GOOGLE_SHEET_TAB || 'productos';
-const HEADER = ['id', 'producto', 'categoria', 'mercado', 'cantidad_sugerida', 'falta_esta_semana', 'activo', 'creado_por', 'updated_at'];
+const RANGE = `${SHEET_NAME}!A1:Z101`;
 
-function getPrivateKey() {
-  return (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+function getAuth() {
+  return new google.auth.JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    scopes: ['https://www.googleapis.com/auth/spreadsheets']
+  });
 }
 
-async function getSheetsClient() {
-  const auth = new google.auth.JWT(
-    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    null,
-    getPrivateKey(),
-    SCOPES
-  );
+async function getSheets() {
+  const auth = getAuth();
   await auth.authorize();
   return google.sheets({ version: 'v4', auth });
 }
 
-async function ensureHeader(sheets, spreadsheetId) {
-  const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${SHEET_NAME}!A1:I2` });
-  const rows = res.data.values || [];
-  if (!rows.length) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `${SHEET_NAME}!A1:I1`,
-      valueInputOption: 'RAW',
-      requestBody: { values: [HEADER] }
-    });
-  }
+function normalizeBoolean(value) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return value.toLowerCase() === 'true';
+  return false;
 }
 
-function mapRow(row, rowIndex) {
+function normalizeNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+async function getAllRows() {
+  const sheets = await getSheets();
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: RANGE
+  });
+
+  const values = response.data.values || [];
+  if (!values.length) return [];
+
+  const headers = values[0].map(h => String(h).trim());
+  const rows = values.slice(1);
+
+  return rows
+    .filter(row => row.some(cell => String(cell || '').trim() !== ''))
+    .map((row, index) => {
+      const obj = {};
+      headers.forEach((header, i) => {
+        obj[header] = row[i] ?? '';
+      });
+      obj._rowNumber = index + 2;
+      return obj;
+    });
+}
+
+function mapProduct(row) {
   return {
-    rowIndex,
-    id: row[0] || '',
-    producto: row[1] || '',
-    categoria: row[2] || '',
-    mercado: row[3] || 'Otros',
-    cantidad_sugerida: row[4] || '',
-    falta_esta_semana: String(row[5]).toLowerCase() === 'true',
-    activo: row[6] === undefined ? true : String(row[6]).toLowerCase() !== 'false',
-    creado_por: row[7] || 'admin',
-    updated_at: row[8] || ''
+    id: row.id,
+    producto: row.producto || '',
+    categoria: row.categoria || '',
+    mercado: row.mercado || 'Otros',
+    cantidad_sugerida: normalizeNumber(row.cantidad_sugerida),
+    falta_esta_semana: normalizeBoolean(row.falta_esta_semana),
+    activo: normalizeBoolean(row.activo),
+    creado_por: row.creado_por || '',
+    updated_at: row.updated_at || '',
+    _rowNumber: row._rowNumber
   };
 }
 
-async function getAllProducts() {
-  const sheets = await getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  await ensureHeader(sheets, spreadsheetId);
-  const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${SHEET_NAME}!A2:I` });
-  const values = res.data.values || [];
-  return values.map((row, idx) => mapRow(row, idx + 2));
-}
-
-async function appendProduct(product) {
-  const sheets = await getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    range: `${SHEET_NAME}!A:I`,
-    valueInputOption: 'USER_ENTERED',
-    insertDataOption: 'INSERT_ROWS',
-    requestBody: {
-      values: [[
-        product.id,
-        product.producto,
-        product.categoria,
-        product.mercado,
-        product.cantidad_sugerida,
-        String(product.falta_esta_semana),
-        String(product.activo),
-        product.creado_por,
-        product.updated_at
-      ]]
-    }
-  });
-}
-
-async function updateRow(rowIndex, rowValues) {
-  const sheets = await getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    range: `${SHEET_NAME}!A${rowIndex}:I${rowIndex}`,
-    valueInputOption: 'USER_ENTERED',
-    requestBody: { values: [rowValues] }
-  });
-}
-
-async function deleteRow(rowIndex) {
-  const sheets = await getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  const sheetMeta = await sheets.spreadsheets.get({ spreadsheetId });
-  const sheet = sheetMeta.data.sheets.find(s => s.properties.title === SHEET_NAME);
-  await sheets.spreadsheets.batchUpdate({
-    spreadsheetId,
-    requestBody: {
-      requests: [{
-        deleteDimension: {
-          range: {
-            sheetId: sheet.properties.sheetId,
-            dimension: 'ROWS',
-            startIndex: rowIndex - 1,
-            endIndex: rowIndex
-          }
-        }
-      }]
-    }
-  });
-}
-
-function toRow(product) {
-  return [
-    product.id,
-    product.producto,
-    product.categoria,
-    product.mercado,
-    product.cantidad_sugerida,
-    String(product.falta_esta_semana),
-    String(product.activo),
-    product.creado_por,
-    product.updated_at
-  ];
-}
-
-module.exports = { getAllProducts, appendProduct, updateRow, deleteRow, toRow };
+module.exports = {
+  getSheets,
+  getAllRows,
+  mapProduct,
+  SHEET_ID,
+  SHEET_NAME,
+  RANGE
+};
