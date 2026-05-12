@@ -16,21 +16,21 @@
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">M</div><div class="brand-text"><strong>Mercado semanal</strong><span>Review interna en Perplexity</span></div></div>
+      <div class="brand"><div class="logo">M</div><div class="brand-text"><strong>Mercado semanal</strong><span>Los chiquis</span></div></div>
       <nav class="nav"><button data-view-btn="mary">Sra Mary</button><button class="active" data-view-btn="admin">Administración</button></nav>
       <button class="btn" data-theme-toggle>Modo oscuro</button>
     </aside>
     <main class="content">
-      <header class="topbar"><div class="title-wrap"><h1>Compra semanal de mercado</h1><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado. [code_file:2]</p></div><button class="btn" id="resetWeekBtn">Reset semana</button></header>
-      <div id="status" class="status">Vista de revisión con botones táctiles para marcar faltantes. [code_file:2]</div>
+      <header class="topbar"><div class="title-wrap"><h1>Compra semanal de mercado</h1><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado.</p></div><button class="btn" id="resetWeekBtn">Reset semana</button></header>
+      <div id="status" class="status">Cambios listos.</div>
 
       <section id="view-mary" class="view hidden">
         <div class="panel">
-          <div class="section-head"><div><h2>Qué falta en casa</h2><p>Primero va toda la lista cargada; al final quedan las cajas para agregar algo excepcional que no esté en la lista. [code_file:2]</p></div></div>
+          <div class="section-head"><div><h2>Qué falta en casa</h2><p>Primero va toda la lista cargada; al final quedan las cajas para agregar algo excepcional que no esté en la lista.</p></div></div>
           <div class="products" id="maryList"></div>
         </div>
         <div class="panel">
-          <div class="section-head"><div><h2>Agregar producto nuevo</h2><p>Se dejan dos cajas al final para casos poco frecuentes. Si alguna vez hace falta más, se resuelve desde administración. [code_file:2]</p></div></div>
+          <div class="section-head"><div><h2>Agregar producto nuevo</h2><p>Se dejan dos cajas al final para casos poco frecuentes. Si alguna vez hace falta más, se resuelve desde administración.</p></div></div>
           <div class="mary-new-grid">
             <form class="new-box maryAddForm">
               <div class="field"><label>Producto</label><input name="producto" type="text" placeholder="Ej. Yogurt paquete" /></div>
@@ -38,29 +38,24 @@
               <div class="field"><label>Mercado</label><select name="mercado"></select></div>
               <button class="btn" type="submit">Agregar</button>
             </form>
-            <form class="new-box maryAddForm">
-              <div class="field"><label>Producto</label><input name="producto" type="text" placeholder="Ej. Manzanas bolsa" /></div>
-              <div class="field"><label>Cantidad</label><input name="cantidad" type="number" min="1" step="1" placeholder="Ej. 1" /></div>
-              <div class="field"><label>Mercado</label><select name="mercado"></select></div>
-              <button class="btn" type="submit">Agregar</button>
-            </form>
+            
           </div>
-          <div class="footer-actions" style="margin-top:var(--space-4)"><button class="btn btn-primary" id="marySaveBtn">Guardar cambios</button></div>
+          <div class="footer-actions" style="margin-top:var(--space-4)"><button class="btn btn-primary" id="marySaveBtn">Guardar cambios</button></div><div id="maryStatus" class="status hidden" style="margin-top:var(--space-4)"></div>
         </div>
       </section>
 
       <section id="view-admin" class="view">
         <div class="panel">
-          <div class="section-head"><div><h2>Resumen</h2><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado. [code_file:2]</p></div></div>
+          <div class="section-head"><div><h2>Resumen</h2><p>Sra Mary marca faltantes y agrega productos nuevos. Denise revisa, corrige y genera la lista final por mercado.</p></div></div>
           <div class="stats"><div class="summary-card"><div class="label">Productos activos</div><div class="value" id="statProducts">0</div></div><div class="summary-card"><div class="label">Faltan esta semana</div><div class="value" id="statMissing">0</div></div><div class="summary-card"><div class="label">Mercados usados</div><div class="value" id="statMarkets">0</div></div></div>
         </div>
         <div class="panel">
-          <div class="section-head"><div><h2>Productos</h2><p>Se eliminó la duplicación no editable de cantidad y mercado arriba de los campos editables. [code_file:2]</p></div></div>
+          <div class="section-head"><div><h2>Productos</h2><p>Se eliminó la duplicación no editable de cantidad y mercado arriba de los campos editables.</p></div></div>
           <div class="products" id="adminList"></div>
           <div class="footer-actions"><button class="btn btn-primary" id="adminSaveBtn">Guardar cambios</button></div>
         </div>
         <div class="panel">
-          <div class="section-head"><div><h2>Lista final por mercado</h2><p>Queda al final del todo para copiar después de revisar. [code_file:2]</p></div><button class="btn btn-primary" id="copyBtn">Copiar al portapapeles</button></div>
+          <div class="section-head"><div><h2>Lista final por mercado</h2><p>Queda al final del todo para copiar después de revisar.</p></div><button class="btn btn-primary" id="copyBtn">Copiar al portapapeles</button></div>
           <div class="shopping-list" id="shoppingList"></div>
         </div>
       </section>
@@ -86,11 +81,11 @@
     function adminCard(p){return `<article class="item-card"><div class="item-top"><div class="item-name">${p.producto}</div><span class="badge market">${p.mercado}</span></div><div class="field-inline"><div class="field"><label>Producto</label><input type="text" value="${p.producto}" data-admin-name="${p.id}"></div><div class="field"><label>Cantidad</label><input type="number" min="1" step="1" value="${p.cantidad}" data-admin-qty="${p.id}"></div><div class="field"><label>Mercado</label><select data-admin-market="${p.id}">${marketOptions(p.mercado)}</select></div><div class="field"><label>Falta</label><button type="button" class="toggle-btn ${p.falta?'is-on':''}" data-admin-toggle="${p.id}" aria-pressed="${p.falta?'true':'false'}">${p.falta?'Marcado':'Marcar'}</button></div><button class="btn btn-danger" data-delete="${p.id}">Eliminar</button></div></article>`}
     function grouped(){const groups=Object.fromEntries(MARKETS.map(m=>[m,[]]));products.filter(p=>p.falta).forEach(p=>groups[p.mercado].push(p));return groups}
     function renderShopping(){const groups=grouped();byId('shoppingList').innerHTML=MARKETS.map(m=>groups[m].length?`<section class="shopping-group"><h3>${m}</h3>${groups[m].map(p=>`<div class="shopping-row"><span><strong>${p.producto}</strong><br><span style="color:var(--color-text-muted);font-size:var(--text-sm)">Cantidad: ${p.cantidad}</span></span><span>${p.mercado}</span></div>`).join('')}</section>`:'').join('')||'<div class="empty">No hay productos pendientes.</div>'}
-    function render(){renderStats();byId('maryList').innerHTML=products.map(maryCard).join('');byId('adminList').innerHTML=products.map(adminCard).join('');renderShopping();bind()}
+    function render(){renderStats();byId('maryList').innerHTML=products.map(maryCard).join('');byId('adminList').innerHTML=products.map(adminCard).join('');renderShopping();bind();const box=byId('maryStatus');if(box&&box.textContent.trim()===''){box.classList.add('hidden');}}
     function bind(){document.querySelectorAll('[data-mary-toggle]').forEach(el=>el.onclick=()=>{const id=Number(el.dataset.maryToggle);const current=pendingMary.has(id)?pendingMary.get(id).falta:products.find(p=>p.id===id)?.falta;const next=!current;pendingMary.set(id,{falta:next});el.classList.toggle('is-on',next);el.textContent=next?'Marcado':'Marcar';el.setAttribute('aria-pressed',String(next));});document.querySelectorAll('[data-admin-name]').forEach(el=>el.oninput=()=>pendingAdmin.set(Number(el.dataset.adminName),{...(pendingAdmin.get(Number(el.dataset.adminName))||{}),producto:el.value}));document.querySelectorAll('[data-admin-qty]').forEach(el=>el.oninput=()=>pendingAdmin.set(Number(el.dataset.adminQty),{...(pendingAdmin.get(Number(el.dataset.adminQty))||{}),cantidad:Number(el.value||0)}));document.querySelectorAll('[data-admin-market]').forEach(el=>el.onchange=()=>pendingAdmin.set(Number(el.dataset.adminMarket),{...(pendingAdmin.get(Number(el.dataset.adminMarket))||{}),mercado:el.value}));document.querySelectorAll('[data-admin-toggle]').forEach(el=>el.onclick=()=>{const id=Number(el.dataset.adminToggle);const current=pendingAdmin.has(id)?pendingAdmin.get(id).falta:products.find(p=>p.id===id)?.falta;const next=!current;pendingAdmin.set(id,{...(pendingAdmin.get(id)||{}),falta:next});el.classList.toggle('is-on',next);el.textContent=next?'Marcado':'Marcar';el.setAttribute('aria-pressed',String(next));});document.querySelectorAll('[data-delete]').forEach(el=>el.onclick=()=>{products=products.filter(p=>p.id!==Number(el.dataset.delete));setStatus('Producto eliminado en la revisión.');render()})}
-    byId('marySaveBtn').onclick=()=>{for(const [id,ch] of pendingMary) products=products.map(p=>p.id===id?{...p,...ch}:p);pendingMary.clear();setStatus('Cambios de Sra Mary guardados en esta revisión.');render()};
+    byId('marySaveBtn').onclick=()=>{for(const [id,ch] of pendingMary) products=products.map(p=>p.id===id?{...p,...ch}:p);pendingMary.clear();setStatus('Cambios guardados.');const box=byId('maryStatus');box.textContent='Cambios de Sra Mary guardados.';box.classList.remove('hidden');render()};
     byId('adminSaveBtn').onclick=()=>{for(const [id,ch] of pendingAdmin) products=products.map(p=>p.id===id?{...p,...ch}:p);pendingAdmin.clear();setStatus('Cambios de administración guardados en esta revisión.');render()};
-    document.querySelectorAll('.maryAddForm').forEach(form=>form.addEventListener('submit',(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(form).entries());if(!data.producto||!data.cantidad){setStatus('Completa producto y cantidad para agregar uno nuevo.');return;}products.push({id:Date.now()+Math.floor(Math.random()*1000),producto:data.producto,cantidad:Number(data.cantidad),mercado:data.mercado||'Rey',falta:true});form.reset();form.querySelector('select').innerHTML=marketOptions();setStatus('Producto nuevo agregado en la revisión.');render();}));
+    document.querySelectorAll('.maryAddForm').forEach(form=>form.addEventListener('submit',(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(form).entries());if(!data.producto||!data.cantidad){setStatus('Completa producto y cantidad para agregar uno nuevo.');return;}products.push({id:Date.now()+Math.floor(Math.random()*1000),producto:data.producto,cantidad:Number(data.cantidad),mercado:data.mercado||'Rey',falta:true});form.reset();form.querySelector('select').innerHTML=marketOptions();setStatus('Producto nuevo agregado.');const box=byId('maryStatus');box.textContent='Producto nuevo agregado a la lista.';box.classList.remove('hidden');render();}));
     byId('copyBtn').onclick=async()=>{const groups=grouped();const text=MARKETS.map(m=>groups[m].length?`${m.toUpperCase()}\n${groups[m].map(p=>`- ${p.producto} (${p.cantidad})`).join('\n')}`:'').filter(Boolean).join('\n\n');try{await navigator.clipboard.writeText(text||'No hay productos pendientes.');setStatus('Lista copiada al portapapeles.')}catch{alert(text||'No hay productos pendientes.')}};
     byId('resetWeekBtn').onclick=()=>{products=products.map(p=>({...p,falta:false}));pendingMary.clear();pendingAdmin.clear();setStatus('Semana reseteada en la revisión.');render()};
     document.querySelectorAll('[data-view-btn]').forEach(btn=>btn.addEventListener('click',()=>{const target=btn.dataset.viewBtn;document.querySelectorAll('[data-view-btn]').forEach(b=>b.classList.toggle('active',b===btn));['mary','admin'].forEach(v=>byId(`view-${v}`).classList.toggle('hidden',v!==target))}));
